@@ -12,6 +12,13 @@ namespace Unity.WebRTC
     /// <param name="renderer"></param>
     public delegate void OnVideoReceived(Texture renderer);
 
+    [Flags]
+    public enum VideoSourceMemoryType
+    {
+        GpuMemory = 1,
+        CpuMemory = 1 << 1
+    }
+        
     public class VideoStreamTrack : MediaStreamTrack
     {
         internal static ConcurrentDictionary<IntPtr, WeakReference<VideoStreamTrack>> s_tracks =
@@ -32,8 +39,8 @@ namespace Unity.WebRTC
             return tex;
         }
 
-        internal VideoStreamTrack(Texture source, RenderTexture dest, int width, int height)
-            : this(dest.GetNativeTexturePtr(), width, height, source.graphicsFormat)
+        internal VideoStreamTrack(Texture source, RenderTexture dest, int width, int height, bool useGpu, bool useCpu)
+            : this(dest.GetNativeTexturePtr(), width, height, source.graphicsFormat, useGpu, useCpu)
         {
             m_needFlip = true;
             m_sourceTexture = source;
@@ -251,7 +258,7 @@ namespace Unity.WebRTC
 
     internal class VideoTrackSource : RefCountedObject
     {
-        public VideoTrackSource() : base(WebRTC.Context.CreateVideoTrackSource())
+        public VideoTrackSource(bool useGpu, bool useCpu) : base(WebRTC.Context.CreateVideoTrackSource(useGpu, useCpu))
         {
             WebRTC.Table.Add(self, this);
         }

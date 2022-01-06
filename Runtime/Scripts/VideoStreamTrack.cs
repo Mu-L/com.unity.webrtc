@@ -22,7 +22,7 @@ namespace Unity.WebRTC
         RenderTexture m_destTexture;
 
         UnityVideoRenderer m_renderer;
-        VideoTrackSource _source;
+        VideoTrackSource m_source;
 
         private static RenderTexture CreateRenderTexture(int width, int height)
         {
@@ -65,6 +65,8 @@ namespace Unity.WebRTC
 
         internal void UpdateReceiveTexture()
         {
+            if (m_renderer == null)
+                return;
             if (m_sourceTexture == null || m_destTexture == null)
             {
                 return;
@@ -79,12 +81,13 @@ namespace Unity.WebRTC
             {
                 Graphics.Blit(m_sourceTexture, m_destTexture, WebRTC.flipMat);
             }
-
             WebRTC.Context.UpdateRendererTexture(m_renderer.id, m_sourceTexture);
         }
 
         internal void Update()
         {
+            if (m_source == null)
+                return;
             // [Note-kazuki: 2020-03-09] Flip vertically RenderTexture
             // note: streamed video is flipped vertical if no action was taken:
             //  - duplicate RenderTexture from its source texture
@@ -94,7 +97,6 @@ namespace Unity.WebRTC
             {
                 Graphics.Blit(m_sourceTexture, m_destTexture, WebRTC.flipMat);
             }
-
             WebRTC.Context.Encode(GetSelfOrThrow());
         }
 
@@ -135,7 +137,7 @@ namespace Unity.WebRTC
         internal VideoStreamTrack(string label, VideoTrackSource source)
             : this(WebRTC.Context.CreateVideoTrack(label, source.self))
         {
-            _source = source;
+            m_source = source;
         }
 
         internal VideoStreamTrack(IntPtr sourceTrack) : base(sourceTrack)
@@ -168,7 +170,7 @@ namespace Unity.WebRTC
                 WebRTC.DestroyOnMainThread(m_destTexture);
 
                 m_renderer?.Dispose();
-                _source?.Dispose();
+                m_source?.Dispose();
 
                 s_tracks.TryRemove(self, out var value);
             }

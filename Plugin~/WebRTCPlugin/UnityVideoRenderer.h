@@ -19,7 +19,8 @@ namespace webrtc {
 
         uint32_t GetId();
         rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetFrameBuffer();
-        void SetFrameBuffer(rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer);
+        void SetFrameBuffer(
+            rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer, uint32_t timestamp);
 
         // used in UnityRenderingExtEventUpdateTexture 
         std::vector<uint8_t> tempBuffer;
@@ -30,6 +31,8 @@ namespace webrtc {
         uint32_t m_id;
         std::mutex m_mutex;
         rtc::scoped_refptr<webrtc::VideoFrameBuffer> m_frameBuffer;
+        uint32_t m_last_renderered_timestamp;
+        std::atomic<uint32_t> m_timestamp;
         DelegateVideoFrameResize m_callback;
     };
 

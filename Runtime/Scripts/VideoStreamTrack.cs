@@ -65,8 +65,10 @@ namespace Unity.WebRTC
 
         internal void UpdateReceiveTexture()
         {
-            if (m_renderer == null)
+            // todo(kazuki):: workaround
+            if (m_renderer == null || m_source != null)
                 return;
+
             if (m_sourceTexture == null || m_destTexture == null)
             {
                 return;

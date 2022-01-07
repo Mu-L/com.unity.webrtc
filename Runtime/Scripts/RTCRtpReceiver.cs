@@ -55,6 +55,11 @@ namespace Unity.WebRTC
             return peer.GetStats(this);
         }
 
+        public void GetContributingSources()
+        {
+            NativeMethods.ReceiverGetSources(self, out var length);
+        }
+
         public MediaStreamTrack Track
         {
             get

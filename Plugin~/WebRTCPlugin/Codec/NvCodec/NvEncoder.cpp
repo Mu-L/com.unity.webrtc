@@ -340,6 +340,7 @@ namespace webrtc
             .set_video_frame_buffer(buffer)
             .set_timestamp_us(translated_camera_time_us)
             .set_timestamp_rtp(0)
+            .set_id(frame_id_++)
             .set_ntp_time_ms(rtc::TimeMillis());
 
         CaptureFrame(builder.build());

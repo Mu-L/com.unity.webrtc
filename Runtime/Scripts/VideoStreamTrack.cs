@@ -136,12 +136,26 @@ namespace Unity.WebRTC
             WebRTC.Context.InitializeEncoder(GetSelfOrThrow());
         }
 
+        /// <summary>
+        /// Video Sender
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="source"></param>
+
         internal VideoStreamTrack(string label, VideoTrackSource source)
-            : this(WebRTC.Context.CreateVideoTrack(label, source.self))
+            : base(WebRTC.Context.CreateVideoTrack(label, source.self))
         {
+            if (!s_tracks.TryAdd(self, new WeakReference<VideoStreamTrack>(this)))
+                throw new InvalidOperationException();
+
+            m_needFlip = true;
             m_source = source;
         }
 
+        /// <summary>
+        /// Video Receiver 
+        /// </summary>
+        /// <param name="sourceTrack"></param>
         internal VideoStreamTrack(IntPtr sourceTrack) : base(sourceTrack)
         {
             if (!s_tracks.TryAdd(self, new WeakReference<VideoStreamTrack>(this)))
@@ -289,6 +303,7 @@ namespace Unity.WebRTC
 
         public UnityVideoRenderer(VideoStreamTrack track)
         {
+            Debug.Log("UnityVideoRenderer");
             self = WebRTC.Context.CreateVideoRenderer(OnVideoFrameResize);
             this.track = track;
             NativeMethods.VideoTrackAddOrUpdateSink(track.GetSelfOrThrow(), self);

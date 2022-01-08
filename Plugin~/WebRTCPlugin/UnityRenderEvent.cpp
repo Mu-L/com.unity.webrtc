@@ -349,7 +349,15 @@ static void UNITY_INTERFACE_API TextureUpdateCallback(int eventID, void* data)
         s_mapVideoRenderer[params->userData] = renderer;
         {
             ScopedProfiler profiler(*s_MarkerDecode);
-            renderer.get()->ConvertVideoFrameToTextureAndWriteToBuffer(params->width, params->height, ConvertTextureFormat(params->format));
+            renderer.get()->ConvertVideoFrameToTextureAndWriteToBuffer(
+                params->width, params->height, ConvertTextureFormat(params->format));
+
+            RTC_LOG(LS_INFO) << "End Decode :\t"
+                << renderer->GetLastFrameId()
+                << "\t"
+                << s_clock->TimeInMicroseconds()
+                << "\t"
+                << renderer->GetId();
         }
         params->texData = renderer.get()->tempBuffer.data();
     }

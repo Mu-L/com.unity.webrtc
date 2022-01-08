@@ -32,6 +32,7 @@ namespace webrtc
         int m_height = 1080;
         UnityRenderingExtTextureFormat m_textureFormat;
         uint64 m_frameCount = 0;
+        uint16_t frame_id_ = 0;
     };
 //---------------------------------------------------------------------------------------------------------------------
     

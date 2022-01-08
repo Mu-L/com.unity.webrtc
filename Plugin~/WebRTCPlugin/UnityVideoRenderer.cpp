@@ -24,13 +24,14 @@ UnityVideoRenderer::~UnityVideoRenderer()
 
 void UnityVideoRenderer::OnFrame(const webrtc::VideoFrame &frame)
 {
+    RTC_LOG(LS_INFO) << "OnFrame:" << frame.id();
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer = frame.video_frame_buffer();
 
     if (frame_buffer->type() == webrtc::VideoFrameBuffer::Type::kNative)
     {
         frame_buffer = frame_buffer->ToI420();
     }
-    SetFrameBuffer(frame_buffer, frame.timestamp_us());
+    SetFrameBuffer(frame_buffer, frame.timestamp_us(), frame.id());
 }
 
 uint32_t UnityVideoRenderer::GetId()
@@ -51,12 +52,11 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> UnityVideoRenderer::GetFrameBuffer(
         return nullptr;
     }
     m_last_renderered_timestamp = m_timestamp;
-
     return m_frameBuffer;
 }
 
 void UnityVideoRenderer::SetFrameBuffer(
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer, uint32_t timestamp)
+    rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer, int64_t timestamp, uint16_t frameId)
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     if (!lock.owns_lock())
@@ -71,6 +71,8 @@ void UnityVideoRenderer::SetFrameBuffer(
 
     m_frameBuffer = buffer;
     m_timestamp = timestamp;
+    m_frameId = frameId;
+    RTC_LOG(LS_INFO) << (uint16_t)m_frameId;
 }
 
 void UnityVideoRenderer::ConvertVideoFrameToTextureAndWriteToBuffer(
@@ -81,7 +83,6 @@ void UnityVideoRenderer::ConvertVideoFrameToTextureAndWriteToBuffer(
     {
         return;
     }
-
     rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer;
     if (width == frame->width() && height == frame->height())
     {

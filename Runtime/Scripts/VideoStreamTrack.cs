@@ -79,11 +79,11 @@ namespace Unity.WebRTC
             //  - duplicate RenderTexture from its source texture
             //  - call Graphics.Blit command with flip material every frame
             //  - it might be better to implement this if possible
-            if (m_needFlip)
-            {
-                Graphics.Blit(m_sourceTexture, m_destTexture, WebRTC.flipMat);
-            }
-            WebRTC.Context.UpdateRendererTexture(m_renderer.id, m_sourceTexture);
+            //if (m_needFlip)
+            //{
+            //    Graphics.Blit(m_sourceTexture, m_destTexture, WebRTC.flipMat);
+            //}
+            WebRTC.Context.UpdateRendererTexture(m_renderer.id, m_destTexture);
         }
 
         internal void Update()
@@ -303,7 +303,6 @@ namespace Unity.WebRTC
 
         public UnityVideoRenderer(VideoStreamTrack track)
         {
-            Debug.Log("UnityVideoRenderer");
             self = WebRTC.Context.CreateVideoRenderer(OnVideoFrameResize);
             this.track = track;
             NativeMethods.VideoTrackAddOrUpdateSink(track.GetSelfOrThrow(), self);

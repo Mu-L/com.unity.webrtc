@@ -24,14 +24,20 @@ UnityVideoRenderer::~UnityVideoRenderer()
 
 void UnityVideoRenderer::OnFrame(const webrtc::VideoFrame &frame)
 {
-    RTC_LOG(LS_INFO) << "OnFrame:" << frame.id();
+    //RTC_LOG(LS_INFO) << "OnFrame:" << frame.id();
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer = frame.video_frame_buffer();
 
     if (frame_buffer->type() == webrtc::VideoFrameBuffer::Type::kNative)
     {
         frame_buffer = frame_buffer->ToI420();
     }
-    SetFrameBuffer(frame_buffer, frame.timestamp_us(), frame.id());
+    int64_t timestamp_us =
+        webrtc::Clock::GetRealTimeClock()->TimeInMicroseconds();
+    //SetFrameBuffer(frame_buffer, frame.timestamp_us(), frame.id());
+    SetFrameBuffer(frame_buffer, timestamp_us, frame.id());
+
+    //if (m_frameBuffer == nullptr || m_frameBuffer->width() != buffer->width() || m_frameBuffer->height() != buffer->height())
+    m_callback(this, frame_buffer->width(), frame_buffer->height());
 }
 
 uint32_t UnityVideoRenderer::GetId()
@@ -64,20 +70,20 @@ void UnityVideoRenderer::SetFrameBuffer(
         return;
     }
 
-    if (m_frameBuffer == nullptr || m_frameBuffer->width() != buffer->width() || m_frameBuffer->height() != buffer->height())
-    {
-        m_callback(this, buffer->width(), buffer->height());
-    }
+    //if (m_frameBuffer == nullptr || m_frameBuffer->width() != buffer->width() || m_frameBuffer->height() != buffer->height())
+    //{
+    //    m_callback(this, buffer->width(), buffer->height());
+    //}
 
     m_frameBuffer = buffer;
     m_timestamp = timestamp;
     m_frameId = frameId;
-    RTC_LOG(LS_INFO) << (uint16_t)m_frameId;
 }
 
 void* UnityVideoRenderer::ConvertVideoFrameToTextureAndWriteToBuffer(
     int width, int height, libyuv::FourCC format)
 {
+    int64_t timestamp = m_timestamp;
     auto frame = GetFrameBuffer();
     if (frame == nullptr)
     {
@@ -99,6 +105,9 @@ void* UnityVideoRenderer::ConvertVideoFrameToTextureAndWriteToBuffer(
     if (tempBuffer.size() != size)
         tempBuffer.resize(size);
 
+    // flip vertical
+    height = -height;
+
     if(0 > libyuv::ConvertFromI420(
         i420_buffer->DataY(), i420_buffer->StrideY(), i420_buffer->DataU(),
         i420_buffer->StrideU(), i420_buffer->DataV(), i420_buffer->StrideV(),
@@ -106,6 +115,9 @@ void* UnityVideoRenderer::ConvertVideoFrameToTextureAndWriteToBuffer(
     {
         RTC_LOG(LS_INFO) << "failed libyuv::ConvertFromI420";
     }
+    int64_t timestamp_us =
+        webrtc::Clock::GetRealTimeClock()->TimeInMicroseconds();
+    RTC_LOG(LS_INFO) << "duration:\t" << (timestamp_us - timestamp);
     return tempBuffer.data();
 }
 

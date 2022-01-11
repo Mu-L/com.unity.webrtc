@@ -54,10 +54,6 @@ namespace webrtc
             .set_id(frame_id_++)
             .build();
 
-        RTC_LOG(LS_INFO) << "Start Encode :\t"
-            << frame.id()
-            << "\t"
-            << timestamp_us;
 
         CaptureFrame(frame);
         m_frameCount++;

@@ -75,13 +75,13 @@ void UnityVideoRenderer::SetFrameBuffer(
     RTC_LOG(LS_INFO) << (uint16_t)m_frameId;
 }
 
-void UnityVideoRenderer::ConvertVideoFrameToTextureAndWriteToBuffer(
+void* UnityVideoRenderer::ConvertVideoFrameToTextureAndWriteToBuffer(
     int width, int height, libyuv::FourCC format)
 {
     auto frame = GetFrameBuffer();
     if (frame == nullptr)
     {
-        return;
+        return nullptr;
     }
     rtc::scoped_refptr<webrtc::I420BufferInterface> i420_buffer;
     if (width == frame->width() && height == frame->height())
@@ -106,6 +106,7 @@ void UnityVideoRenderer::ConvertVideoFrameToTextureAndWriteToBuffer(
     {
         RTC_LOG(LS_INFO) << "failed libyuv::ConvertFromI420";
     }
+    return tempBuffer.data();
 }
 
 } // end namespace webrtc

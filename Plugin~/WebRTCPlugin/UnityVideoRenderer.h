@@ -17,19 +17,16 @@ namespace webrtc {
         ~UnityVideoRenderer();
         void OnFrame(const webrtc::VideoFrame &frame) override;
 
-        int64_t GetLastTimestamp() const { return m_last_renderered_timestamp; }
-        uint16_t GetLastFrameId() const { return (uint16_t)m_frameId; }
-
-
-
         uint32_t GetId();
         rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetFrameBuffer();
         void SetFrameBuffer(
-            rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer, int64_t timestamp, uint16_t frameId);
+            rtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
+            int64_t timestamp);
 
         // used in UnityRenderingExtEventUpdateTexture 
         // called on RenderThread
-        void* ConvertVideoFrameToTextureAndWriteToBuffer(int width, int height, libyuv::FourCC format);
+        void* ConvertVideoFrameToTextureAndWriteToBuffer(
+            int width, int height, libyuv::FourCC format);
         std::vector<uint8_t> tempBuffer;
 
     private:
@@ -38,7 +35,6 @@ namespace webrtc {
         rtc::scoped_refptr<webrtc::VideoFrameBuffer> m_frameBuffer;
         int64_t m_last_renderered_timestamp;
         std::atomic<int64_t> m_timestamp;
-        std::atomic<uint16_t> m_frameId;
         DelegateVideoFrameResize m_callback;
     };
 

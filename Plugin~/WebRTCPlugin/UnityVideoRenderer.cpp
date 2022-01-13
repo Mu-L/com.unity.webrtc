@@ -24,7 +24,6 @@ UnityVideoRenderer::~UnityVideoRenderer()
 
 void UnityVideoRenderer::OnFrame(const webrtc::VideoFrame &frame)
 {
-    //RTC_LOG(LS_INFO) << "OnFrame:" << frame.id();
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer = frame.video_frame_buffer();
 
     if (frame_buffer->type() == webrtc::VideoFrameBuffer::Type::kNative)
@@ -33,10 +32,8 @@ void UnityVideoRenderer::OnFrame(const webrtc::VideoFrame &frame)
     }
     int64_t timestamp_us =
         webrtc::Clock::GetRealTimeClock()->TimeInMicroseconds();
-    //SetFrameBuffer(frame_buffer, frame.timestamp_us(), frame.id());
     SetFrameBuffer(frame_buffer, timestamp_us, frame.id());
 
-    //if (m_frameBuffer == nullptr || m_frameBuffer->width() != buffer->width() || m_frameBuffer->height() != buffer->height())
     m_callback(this, frame_buffer->width(), frame_buffer->height());
 }
 

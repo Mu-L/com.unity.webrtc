@@ -94,7 +94,6 @@ namespace webrtc
         uint32_t m_frameRate = 30;
         uint32_t m_targetBitrate = 0;
         rtc::TimestampAligner timestamp_aligner_;
-        uint16_t frame_id_ = 0;
     };
     
 } // end namespace webrtc

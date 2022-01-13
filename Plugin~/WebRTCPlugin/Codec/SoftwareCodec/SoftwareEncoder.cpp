@@ -51,10 +51,8 @@ namespace webrtc
             .set_video_frame_buffer(i420Buffer)
             .set_rotation(webrtc::kVideoRotation_0)
             .set_timestamp_us(timestamp_us)
-            .set_id(frame_id_++)
             .build();
-
-
+            
         CaptureFrame(frame);
         m_frameCount++;
         return true;

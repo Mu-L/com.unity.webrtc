@@ -408,7 +408,6 @@ extern "C"
 
     UNITY_INTERFACE_EXPORT void VideoTrackAddOrUpdateSink(VideoTrackInterface* track, UnityVideoRenderer* sink)
     {
-        RTC_LOG(LS_INFO) << "VideoTrackAddOrUpdateSink";
         track->AddOrUpdateSink(sink, rtc::VideoSinkWants());
     }
 
